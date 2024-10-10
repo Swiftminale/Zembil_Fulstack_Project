@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Zembil admin auth",
+  title: "Zembil Ecommerce admi Dashbord",
   description: "admin to manage Zembil ",
 };
 
