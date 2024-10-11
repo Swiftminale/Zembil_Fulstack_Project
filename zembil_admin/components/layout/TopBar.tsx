@@ -20,7 +20,7 @@ function TopBar() {
           <Link
             href={link.url}
             key={link.label}
-            className="flex gap-4 text-body-medium"
+            className={`flex gap-4 text-body-medium ${pathname == link.url ? "text-blue-2" : ""}` }
           >
             {link.icon} <p>{link.label}</p>
           </Link>
