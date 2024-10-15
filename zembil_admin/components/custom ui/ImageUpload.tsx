@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
@@ -14,6 +15,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   onRemove,
   value,
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const onUpload = (result: any) => {
     if (result.event === "success") {
       const info = result.info as { secure_url: string };
@@ -21,18 +28,25 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center">
         {value.map((url) => (
-          <Image
-            key={url}
-            src={url}
-            alt="collection"
-            width={100}
-            height={100}
-            className="object-cover rounded-lg"
-          />
+          <div key={url} className="relative">
+            <Image
+              src={url}
+              key={url}
+              alt="collection"
+              width={100}
+              height={100}
+              className="object-cover rounded-lg"
+              onError={(e) => console.error("Image failed to load", e)}
+            />
+          </div>
         ))}
       </div>
 
