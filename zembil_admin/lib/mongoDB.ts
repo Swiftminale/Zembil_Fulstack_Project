@@ -10,14 +10,20 @@ export const connectToDB = async (): Promise<void> => {
     return;
   }
 
+  if (!process.env.MONGODB_URL) {
+    throw new Error("MONGODB_URL is not defined in the environment variables");
+  }
+
   try {
-    await mongoose.connect(process.env.MONGODB_URL || "", {
+    const conn = await mongoose.connect(process.env.MONGODB_URL, {
       dbName: "Zembil_Admin",
     });
 
     isConnected = true;
-    console.log("MongoDB is connected");
+    console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (err) {
-    console.log(err);
+    console.error("Error connecting to MongoDB:", err);
+    isConnected = false;
+    throw err; // Re-throw the error so it can be caught in the API route
   }
 };

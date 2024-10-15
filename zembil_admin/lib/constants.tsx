@@ -13,7 +13,7 @@ export const navLinks = [
     label: "Dashboard",
   },
   {
-    url: "/collections/new",
+    url: "/collections",
     icon: <Shapes />,
     label: "Collections",
   },
