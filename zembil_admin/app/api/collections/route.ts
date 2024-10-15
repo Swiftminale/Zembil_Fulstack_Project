@@ -1,23 +1,23 @@
 import { connectToDB } from "@/lib/mongoDB";
-import { auth } from "@clerk/nextjs/server";
-import Collection from "@/lib/models/Collection";
+import { getAuth } from "@clerk/nextjs/server"; // Update import
 import { NextRequest, NextResponse } from "next/server";
-import mongoose from "mongoose";
+
+import Collection from "@/lib/models/Collection";
+
+// ----POST Request----
 
 export const POST = async (req: NextRequest) => {
+  console.log("POST request", req.body);
   try {
-    const { userId } = auth();
-    console.log("User ID:", userId);
+    const { userId } = getAuth(req); // Use getAuth to retrieve userId
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
     await connectToDB();
-    console.log("MongoDB connection established");
 
     const { title, description, image } = await req.json();
-    console.log("Received data:", { title, description, image });
 
     if (!title || !image) {
       return new NextResponse("Title and image are required", { status: 400 });
@@ -26,27 +26,37 @@ export const POST = async (req: NextRequest) => {
     const existingCollection = await Collection.findOne({ title });
 
     if (existingCollection) {
-      return new NextResponse("Collection already exists", { status: 400 });
+      return new NextResponse("Collection already exists", { status: 409 });
     }
 
-    const newCollection = new Collection({
+    const newCollection = await Collection.create({
       title,
       description,
       image,
     });
 
-    await newCollection.save();
-
-    console.log("New collection created:", newCollection);
-
     return NextResponse.json(newCollection, { status: 201 });
   } catch (err) {
-    console.error("[collections_POST]", err);
-    if (err instanceof mongoose.Error.ValidationError) {
-      return new NextResponse(err.message, { status: 400 });
-    }
-    return new NextResponse("Internal Server Error", {
-      status: 500,
-    });
+    console.log("[collections_POST]", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
+// ----End of POST Request----
+
+// ----GET Request----
+
+export const GET = async () => {
+  try {
+    await connectToDB();
+
+    const collections = await Collection.find().sort({ createdAt: "desc" });
+    return NextResponse.json(collections, { status: 200 });
+  } catch (err) {
+    console.log("[collections_GET]", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+};
+
+// ----End of GET Request----
+
+export const dynamic = "force-dynamic";

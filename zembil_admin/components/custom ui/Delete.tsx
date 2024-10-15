@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
 
+
 interface DeleteProps {
   id: string;
 }
@@ -26,7 +27,13 @@ const Delete: React.FC<DeleteProps> = ({id}) => {
       setLoading(true);
       const res = await fetch(`/api/collections/${id}`, {
         method: "DELETE",
-      });
+      })
+
+      if (res.ok){
+        setLoading(false);
+        window.location.href = "/collections";
+        toast.success("Collection deleted successfully");
+      }
     } catch (err) {
       console.log(err);
       toast.error("Somethin went wrong Please try Again!");
@@ -52,8 +59,8 @@ const Delete: React.FC<DeleteProps> = ({id}) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction className="bg-red-1 text-white">
-            Continue
+          <AlertDialogAction className="bg-red-1 text-white" onClick={onDelete}>
+            Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

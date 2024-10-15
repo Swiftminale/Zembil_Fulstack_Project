@@ -2,10 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 import { Separator } from "../ui/separator";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,11 +18,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import ImageUpload from "../custom ui/ImageUpload";
-import { useRouter } from "next/navigation"; // Corrected this line
-import toast from "react-hot-toast";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -31,6 +30,7 @@ const formSchema = z.object({
 function CollectionForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,32 +40,40 @@ function CollectionForm() {
     },
   });
 
+  // ---On Submit---
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
     try {
       setLoading(true);
       const res = await fetch("/api/collections", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(values),
       });
+
       if (res.ok) {
-        setLoading(false);
         toast.success("Collection created successfully");
         router.push("/collections");
+      } else {
+        const errorResponse = await res.text();
+        console.log("Server Error: ", errorResponse);
+        toast.error("Failed to create collection");
       }
     } catch (err) {
       console.log("[Collection_POST]", err);
       toast.error("Failed to create collection");
+    } finally {
+      setLoading(false);
     }
-    console.log(values);
   };
 
   return (
     <div className="p-10">
       <p className="text-heading2-bold">Create Collection</p>
-
       <Separator className="bg-grey-1 mt-4 mb-7" />
 
-      {/* Form */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Title */}
@@ -117,14 +125,20 @@ function CollectionForm() {
             )}
           />
 
+          {/* Buttons */}
           <div className="flex gap-2">
-            <Button type="submit" className="bg-blue-1 text-white ">
-              Submit
+            <Button
+              type="submit"
+              className="bg-blue-1 text-white"
+              disabled={loading}
+            >
+              {loading ? "Submitting..." : "Submit"}
             </Button>
             <Button
               type="button"
               className="bg-red-500 text-white"
               onClick={() => router.push("/collections")}
+              disabled={loading}
             >
               Discard
             </Button>
