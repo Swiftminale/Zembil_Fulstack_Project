@@ -1,6 +1,6 @@
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import Image from "next/image";
 
 interface ImageUploadProps {
@@ -23,16 +23,27 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center">
+      <div className="mb-4 flex flex-wrap items-center gap-4">
         {value.map((url) => (
-          <Image
-            key={url}
-            src={url}
-            alt="collection"
-            width={100}
-            height={100}
-            className="object-cover rounded-lg"
-          />
+          <div key={url} className="relative">
+            <div className="absolute top-0 right-0 z-10">
+              <Button
+                onClick={() => onRemove(url)}
+                size="sm"
+                className="bg-red-1 text-white"
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            </div>
+            <Image
+              src={url}
+              alt="collection"
+              width={200}
+              height={200}
+              style={{ objectFit: "cover" }}
+              className="rounded-lg"
+            />
+          </div>
         ))}
       </div>
 
