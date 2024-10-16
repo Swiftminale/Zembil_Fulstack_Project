@@ -1,37 +1,35 @@
 "use client";
-// Dependencies
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { z } from "zod";
 
-// External component imports
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-
-// Local component imports
+} from "../ui/form";
 import { Separator } from "../ui/separator";
+import { Textarea } from "../ui/textarea";
+
 import ImageUpload from "../custom ui/ImageUpload";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
-  description: z.string().max(500).trim(),
+  description: z.string().min(2).max(500),
   image: z.string(),
 });
 
-function CollectionForm() {
+const CollectionForm = () => {
   const router = useRouter();
+
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,38 +40,25 @@ function CollectionForm() {
       image: "",
     },
   });
-
-  // ---On Submit---
-
+  //---------------------- On Submit fun -----------------------------
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     try {
       setLoading(true);
       const res = await fetch("/api/collections", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(values),
       });
-
-      if (res.ok) {
-        toast.success("Collection created successfully");
+      if (res.ok){
+        setLoading(false);
+        toast.success("Collection Created Successfully");
         router.push("/collections");
-      } else {
-        const errorResponse = await res.text();
-        console.log("Server Error: ", errorResponse);
-        toast.error("Failed to create collection");
       }
     } catch (err) {
-      console.log("[Collection_POST]", err);
+      console.log("[collection_POST]", err);
       toast.error("Failed to create collection");
-    } finally {
-      setLoading(false);
     }
   };
-      // ---End of On Submit---
-      
+  //-------------------------- end of onSubmit fun ----------------------
   return (
     <div className="p-10">
       <p className="text-heading2-bold">Create Collection</p>
@@ -82,7 +67,6 @@ function CollectionForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Title */}
-
           <FormField
             control={form.control}
             name="title"
@@ -90,15 +74,13 @@ function CollectionForm() {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Collection Title" {...field} />
+                  <Input placeholder="Title" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormDescription>This is your Title</FormDescription>
               </FormItem>
             )}
           />
-
-          {/* Description */}
-
+          {/* description */}
           <FormField
             control={form.control}
             name="description"
@@ -108,13 +90,11 @@ function CollectionForm() {
                 <FormControl>
                   <Textarea placeholder="Description" {...field} rows={5} />
                 </FormControl>
-                <FormMessage />
+                <FormDescription>This is your description</FormDescription>
               </FormItem>
             )}
           />
-
           {/* Image */}
-
           <FormField
             control={form.control}
             name="image"
@@ -128,25 +108,17 @@ function CollectionForm() {
                     onRemove={() => field.onChange("")}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
-
-          {/* Buttons */}
-          <div className="flex gap-2">
-            <Button
-              type="submit"
-              className="bg-blue-1 text-white"
-              disabled={loading}
-            >
-              {loading ? "Submitting..." : "Submit"}
+          <div className="flex gap-10">
+            <Button type="submit" className="bg-blue-1 text-white mr-3">
+              Submit
             </Button>
             <Button
               type="button"
-              className="bg-red-500 text-white"
+              className="bg-red-1 text-white"
               onClick={() => router.push("/collections")}
-              disabled={loading}
             >
               Discard
             </Button>
@@ -155,6 +127,6 @@ function CollectionForm() {
       </Form>
     </div>
   );
-}
+};
 
 export default CollectionForm;

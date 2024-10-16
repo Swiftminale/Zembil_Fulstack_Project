@@ -14,10 +14,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   onRemove,
   value,
 }) => {
-  const onUpload = (result: any) => {
+  const handleUpload = (result: any) => {
+    console.log(result);
     if (result.event === "success") {
-      const info = result.info as { secure_url: string };
-      onChange(info.secure_url);
+      onChange(result.info.secure_url);
+    } else {
+      console.error("Image upload failed:", result);
     }
   };
 
@@ -25,37 +27,43 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-4">
         {value.map((url) => (
-          <div key={url} className="relative">
+          <div key={url} className="relative w-[200px] h-[200px]">
             <div className="absolute top-0 right-0 z-10">
               <Button
                 onClick={() => onRemove(url)}
                 size="sm"
                 className="bg-red-1 text-white"
+                aria-label="Remove image"
               >
-                <Trash className="h-4 w-4" />
+                <Trash />
               </Button>
             </div>
             <Image
               src={url}
-              alt="collection"
-              width={200}
-              height={200}
-              style={{ objectFit: "cover" }}
-              className="rounded-lg"
+              alt="Uploaded image"
+              fill
+              className="object-cover rounded-lg"
+              onError={(e) => console.error("Image failed to load", e)}
             />
           </div>
         ))}
       </div>
 
-      <CldUploadWidget uploadPreset="ryjpsjyl" onUpload={onUpload}>
-        {({ open }) => {
-          return (
-            <Button onClick={() => open()} className="bg-grey-1 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Upload Image
-            </Button>
-          );
-        }}
+      <CldUploadWidget
+        uploadPreset="xcl2r2qh"
+        onSuccess={handleUpload} // Changed to onSuccess
+        onError={handleUpload} // Optionally handle errors
+      >
+        {({ open }) => (
+          <Button
+            onClick={() => open?.()}
+            className="bg-grey-1 text-white"
+            aria-label="Upload new image"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Upload Image
+          </Button>
+        )}
       </CldUploadWidget>
     </div>
   );

@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 const collectionSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
   },
   description: String,
   image: {
     type: String,
-    required: true,
+    required: false,
   },
   products: [
     {

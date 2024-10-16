@@ -17,6 +17,7 @@ export const connectToDB = async (): Promise<void> => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URL, {
       dbName: "Zembil_Admin",
+      serverSelectionTimeoutMS: 60000,
     });
 
     isConnected = true;
