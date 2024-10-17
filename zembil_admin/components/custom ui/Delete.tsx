@@ -1,5 +1,8 @@
 "use client";
-import React, { useState } from "react";
+
+import { useState } from "react";
+import { Trash } from "lucide-react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,69 +15,61 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "../ui/button";
-import { Trash } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface DeleteProps {
+  item: string;
   id: string;
 }
 
-const Delete: React.FC<DeleteProps> = ({ id }) => {
-  const [loading, setLoading] = useState(false);
-
+const Delete: React.FC<DeleteProps> = ({ item, id }) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/collections/${id}`, {
+      const itemType = item === "product" ? "products" : "collections";
+      const res = await fetch(`/api/${itemType}/${id}`, {
         method: "DELETE",
       });
 
       if (res.ok) {
-        setLoading(false);
-        window.location.href = "/collections";
-        toast.success("Collection Deleted");
+        window.location.href = `/${itemType}`;
+        toast.success(`${item} deleted`);
       } else {
-        toast.error("Failed to delete the collection");
+        toast.error("Failed to delete the item.");
       }
     } catch (err) {
       console.log(err);
-      toast.error("Please try again, Unable to delete");
+      toast.error("Something went wrong! Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button className="bg-red-1 text-white">
-            <Trash className="h-4 w-4" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent className="bg-white-1 text-grey-1">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-red-1 ">
-              Are you absolutely sure?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              Collection.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-1 text-white"
-              onClick={onDelete}
-              disabled={loading}
-            >
-              {loading ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    <AlertDialog>
+      <AlertDialogTrigger>
+        <Button className="bg-red-1 text-white">
+          <Trash className="h-4 w-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="bg-white text-grey-1">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-red-1">
+            Are you absolutely sure?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your{" "}
+            {item}.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction className="bg-red-1 text-white" onClick={onDelete}>
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

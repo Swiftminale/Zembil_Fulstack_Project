@@ -22,8 +22,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Delete from "../custom ui/Delete";
 import MultiText from "../custom ui/MultiText";
-import MultiSelect from "../custom ui/MultiSelect";
+
 import Loader from "../custom ui/Loader";
+import MultiSelect from "../custom ui/MultiSelect";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -359,7 +360,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
             <Button
               type="button"
               onClick={() => router.push("/products")}
-              className="bg-blue-1 text-white"
+              className="bg-red-1 text-white"
             >
               Discard
             </Button>
