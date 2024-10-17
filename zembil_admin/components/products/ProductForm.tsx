@@ -270,7 +270,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-            {collections.length > 0 && (
+            {collections && collections.length > 0 && (
               <FormField
                 control={form.control}
                 name="collections"
@@ -281,7 +281,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                       <MultiSelect
                         placeholder="Collections"
                         collections={collections}
-                        value={field.value}
+                        value={field.value || []} // Ensure value is always an array
                         onChange={(_id) =>
                           field.onChange([...field.value, _id])
                         }
@@ -299,6 +299,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 )}
               />
             )}
+
             <FormField
               control={form.control}
               name="colors"
