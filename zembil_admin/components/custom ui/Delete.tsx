@@ -23,6 +23,8 @@ interface DeleteProps {
 }
 
 const Delete: React.FC<DeleteProps> = ({ item, id }) => {
+  const [loading, setLoading] = useState(false);
+
   const onDelete = async () => {
     try {
       setLoading(true);
@@ -32,19 +34,15 @@ const Delete: React.FC<DeleteProps> = ({ item, id }) => {
       });
 
       if (res.ok) {
+        setLoading(false);
         window.location.href = `/${itemType}`;
         toast.success(`${item} deleted`);
-      } else {
-        toast.error("Failed to delete the item.");
       }
     } catch (err) {
       console.log(err);
       toast.error("Something went wrong! Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
-
   return (
     <AlertDialog>
       <AlertDialogTrigger>
