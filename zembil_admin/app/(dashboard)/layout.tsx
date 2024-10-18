@@ -36,7 +36,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ToasterProvider/>
-          <div className="flex max-lg:flex-col text-grey-1">
+          <div className="flex max-lg:flex-col text-blak">
             <LeftSideBar />
             <TopBar />
             <div className="flex-1">{children}</div>

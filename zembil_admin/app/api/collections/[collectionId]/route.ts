@@ -1,6 +1,9 @@
-import { NextResponse, NextRequest } from "next/server";
-import Collection from "@/lib/models/Collection";
+import { NextRequest, NextResponse } from "next/server";
+
+
 import { connectToDB } from "@/lib/mongoDB";
+import Collection from "@/lib/models/Collection";
+import Product from "@/lib/models/Product";
 import { auth } from "@clerk/nextjs/server";
 
 export const GET = async (
@@ -9,9 +12,12 @@ export const GET = async (
 ) => {
   try {
     await connectToDB();
-    const collection = await Collection.findById(params.collectionId);
 
-    // Check if the collection exists
+    const collection = await Collection.findById(params.collectionId).populate({
+      path: "products",
+      model: Product,
+    });
+
     if (!collection) {
       return new NextResponse(
         JSON.stringify({ message: "Collection not found" }),
@@ -19,11 +25,10 @@ export const GET = async (
       );
     }
 
-    // Return the collection if it is found
     return NextResponse.json(collection, { status: 200 });
   } catch (err) {
-    console.log(["collectionID_GET"], err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.log("[collectionId_GET]", err);
+    return new NextResponse("Internal error", { status: 500 });
   }
 };
 
@@ -81,9 +86,17 @@ export const DELETE = async (
     await connectToDB();
 
     await Collection.findByIdAndDelete(params.collectionId);
-    return new NextResponse("Collection deleted", { status: 200 });
+
+    await Product.updateMany(
+      { collections: params.collectionId },
+      { $pull: { collections: params.collectionId } }
+    );
+
+    return new NextResponse("Collection is deleted", { status: 200 });
   } catch (err) {
-    console.log(["collectionID_DELETE"], err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.log("[collectionId_DELETE]", err);
+    return new NextResponse("Internal error", { status: 500 });
   }
 };
+
+export const dynamic = "force-dynamic";

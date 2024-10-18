@@ -22,9 +22,8 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Delete from "../custom ui/Delete";
 import MultiText from "../custom ui/MultiText";
-
-import Loader from "../custom ui/Loader";
 import MultiSelect from "../custom ui/MultiSelect";
+import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -270,7 +269,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-            {collections && collections.length > 0 && (
+            {collections.length > 0 && (
               <FormField
                 control={form.control}
                 name="collections"
@@ -281,7 +280,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                       <MultiSelect
                         placeholder="Collections"
                         collections={collections}
-                        value={field.value || []} // Ensure value is always an array
+                        value={field.value}
                         onChange={(_id) =>
                           field.onChange([...field.value, _id])
                         }
@@ -299,7 +298,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 )}
               />
             )}
-
             <FormField
               control={form.control}
               name="colors"
@@ -361,7 +359,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
             <Button
               type="button"
               onClick={() => router.push("/products")}
-              className="bg-red-1 text-white"
+              className="bg-blue-1 text-white"
             >
               Discard
             </Button>

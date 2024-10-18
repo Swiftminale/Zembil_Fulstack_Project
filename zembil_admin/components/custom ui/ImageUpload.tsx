@@ -56,6 +56,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       >
         {({ open }) => (
           <Button
+            type="button"
             onClick={() => open?.()}
             className="bg-grey-1 text-white"
             aria-label="Upload new image"
